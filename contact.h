@@ -10,7 +10,7 @@ typedef struct {
 } Contact;
 
 typedef struct {
-    Contact contacts[100];
+    Contact contacts[MAX_CONTACTS];
     int contactCount;
 } AddressBook;
 
@@ -26,7 +26,8 @@ int Searchname_edit(char *, AddressBook *addressBook, int *);
 void deleteContact(AddressBook *addressBook);
 void listContacts(AddressBook *addressBook);
 void initialize(AddressBook *addressBook);
-void saveContactsToFile(AddressBook *AddressBook);
+int saveContactsToFile(AddressBook *addressBook);
+int loadContactsFromFile(AddressBook *addressBook);
 void saveAndExit(AddressBook *addressBook);
 
 #endif
