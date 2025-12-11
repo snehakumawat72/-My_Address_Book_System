@@ -3,18 +3,30 @@
 #include "contact.h"
 #include "file.h"
 
-void initialize(AddressBook *addressBook);
-void createContact(AddressBook *addressBook);
-void searchContact(AddressBook *addressBook);
-void editContact(AddressBook *addressBook);
-void deleteContact(AddressBook *addressBook);
-void listContacts(AddressBook *addressBook);
-void saveAndExit(AddressBook *addressBook);
+// Safe integer input function
+int getIntInput() {
+    char buffer[32];
+    long value;
+    char *end;
+
+    if (!fgets(buffer, sizeof(buffer), stdin)) {
+        return -1; 
+    }
+
+    value = strtol(buffer, &end, 10);
+
+    if (end == buffer || (*end != '\n' && *end != '\0')) {
+        return -1;  // Invalid number
+    }
+
+    return (int)value;
+}
 
 int main() {
     int choice;
     AddressBook addressBook;
-    initialize(&addressBook);
+
+    initialize(&addressBook);  
 
     do {
         printf("\nAddress Book Menu\n");
@@ -28,12 +40,11 @@ int main() {
 
         printf("\nEnter your choice: ");
 
-        if (scanf("%d", &choice) != 1) {
-            while (getchar() != '\n');  
+        choice = getIntInput();
+        if (choice == -1) {
             printf("Invalid input. Please enter a number.\n");
             continue;
         }
-        getchar();
 
         switch (choice) {
             case 1:
@@ -61,12 +72,12 @@ int main() {
                 if (rc == 0)
                     printf("Contacts saved successfully.\n");
                 else
-                    printf("Failed to save contacts (error %d).\n", rc);
+                    printf("Failed to save contacts.\n");
                 break;
             }
 
             case 7:
-                saveAndExit(&addressBook);
+                saveAndExit(&addressBook);  // Saves + exits
                 break;
 
             default:
