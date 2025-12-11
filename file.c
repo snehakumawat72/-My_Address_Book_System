@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "file.h"
-
-#define MAX_CONTACTS 100
+#include "contact.h"  
 
 int saveContactsToFile(AddressBook *addressBook) {
     FILE *f = fopen("contacts.csv", "w");
@@ -35,8 +34,8 @@ int loadContactsFromFile(AddressBook *addressBook) {
     }
 
     count = atoi(line);
-    if (count < 0) count = 0;
-    if (count > MAX_CONTACTS) count = MAX_CONTACTS;
+    if (count < 0 || count > MAX_CONTACTS)
+        count = 0;
 
     addressBook->contactCount = 0;
 
@@ -52,14 +51,14 @@ int loadContactsFromFile(AddressBook *addressBook) {
         if (matched != 3)
             continue;
 
-        strncpy(addressBook->contacts[addressBook->contactCount].name, name,
-                sizeof(addressBook->contacts[0].name) - 1);
+        strncpy(addressBook->contacts[addressBook->contactCount].name, name, 49);
+        addressBook->contacts[addressBook->contactCount].name[49] = '\0';
 
-        strncpy(addressBook->contacts[addressBook->contactCount].phone, phone,
-                sizeof(addressBook->contacts[0].phone) - 1);
+        strncpy(addressBook->contacts[addressBook->contactCount].phone, phone, 19);
+        addressBook->contacts[addressBook->contactCount].phone[19] = '\0';
 
-        strncpy(addressBook->contacts[addressBook->contactCount].email, email,
-                sizeof(addressBook->contacts[0].email) - 1);
+        strncpy(addressBook->contacts[addressBook->contactCount].email, email, 49);
+        addressBook->contacts[addressBook->contactCount].email[49] = '\0';
 
         addressBook->contactCount++;
 
