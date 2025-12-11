@@ -111,14 +111,18 @@ int valid_phone(char *phone, AddressBook *addressBook)
 int valid_email(char *email, AddressBook *addressBook)
 {
     if (strchr(email, '@') == NULL) return 0;
-    if (strstr(email, ".com") == NULL) return 0;
+
+    /* Require a dot after the '@' (more flexible than requiring ".com") */
+    char *ptr = strchr(email, '@');
+    if (ptr == NULL) return 0;
+    if (strchr(ptr + 1, '.') == NULL) return 0;
+
     for (int i = 0; email[i]; i++)
     {
         if (email[i] >= 'A' && email[i] <= 'Z')
             return 0;
     }
-    char *ptr = strchr(email, '@');
-    if (!ptr) return 0;
+
     if (!isalnum((unsigned char)email[0]) || !isalnum((unsigned char)*(ptr + 1)))
         return 0;
     for (int i = 0; i < addressBook->contactCount; i++)
@@ -135,7 +139,11 @@ void searchContact(AddressBook *addressBook)
     char Searchterm[50];
     do
     {
-        printf("\nSearching Menu\n1.Search by Name\n2.Search by Phone number\n3.Search by Email\n");
+        printf("\nSearching Menu\n");
+        printf("1.Search by Name\n");
+        printf("2.Search by Phone number\n");
+        printf("3.Search by Email\n");
+        printf("4.Exit Search Menu\n");
         if (scanf("%d", &choice) != 1) { while (getchar() != '\n'); choice = 0; }
         getchar();
 
@@ -144,9 +152,10 @@ void searchContact(AddressBook *addressBook)
             case 1: Search_name(Searchterm, addressBook); break;
             case 2: Search_phone(Searchterm, addressBook); break;
             case 3: Search_email(Searchterm, addressBook); break;
+            case 4: printf("Leaving search menu...\n"); break;
             default: if (choice != 0) printf("Invalid Choice. Please Try again.\n"); break;
         }
-    } while (choice > 0 && choice <= 3);
+    } while (choice != 4);
 }
 
 void Search_name(char *Searchterm, AddressBook *addressBook)
@@ -251,14 +260,21 @@ void editContact(AddressBook *addressBook)
             {
                 char newPhone[20];
                 int valid;
+                // Temporarily clear current phone so duplicate check won't match itself
+                char oldPhone[20];
+                strcpy(oldPhone, addressBook->contacts[contactIndex].phone);
+                addressBook->contacts[contactIndex].phone[0] = '\0';
+
                 do
                 {
                     printf("Enter new phone number: ");
                     scanf("%19s", newPhone);
                     valid = valid_phone(newPhone, addressBook);
-                    if (!valid) printf("Invalid phone number, please try again.\n");
+                    if (!valid)
+                        printf("Invalid phone number, please try again.\n");
                 } while (!valid);
 
+                // store validated new phone
                 strcpy(addressBook->contacts[contactIndex].phone, newPhone);
                 printf("Phone updated successfully!\n");
                 break;
@@ -268,12 +284,18 @@ void editContact(AddressBook *addressBook)
             {
                 char newEmail[50];
                 int valid;
+                // Temporarily clear current email so duplicate check won't match itself
+                char oldEmail[50];
+                strcpy(oldEmail, addressBook->contacts[contactIndex].email);
+                addressBook->contacts[contactIndex].email[0] = '\0';
+
                 do
                 {
                     printf("Enter new Email: ");
                     scanf("%49s", newEmail);
                     valid = valid_email(newEmail, addressBook);
-                    if (!valid) printf("Invalid email, Please try again.\n");
+                    if (!valid)
+                        printf("Invalid email, Please try again.\n");
                 } while (!valid);
 
                 strcpy(addressBook->contacts[contactIndex].email, newEmail);
