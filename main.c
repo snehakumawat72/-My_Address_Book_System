@@ -1,52 +1,79 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "contact.h"
+#include "file.h"
+
+void initialize(AddressBook *addressBook);
+void createContact(AddressBook *addressBook);
+void searchContact(AddressBook *addressBook);
+void editContact(AddressBook *addressBook);
+void deleteContact(AddressBook *addressBook);
+void listContacts(AddressBook *addressBook);
+void saveAndExit(AddressBook *addressBook);
 
 int main() {
     int choice;
     AddressBook addressBook;
-    initialize(&addressBook); // Initialize the address book
+    initialize(&addressBook);
 
     do {
-       printf("\n📒 Address Book Menu 📒\n");
-       printf("1️⃣  Create contact ➕\n");
-       printf("2️⃣  Search contact 🔍\n");
-       printf("3️⃣  Edit contact ✏\n");
-       printf("4️⃣  Delete contact ❌\n");
-       printf("5️⃣  List all contacts 📋\n");
-       printf("6️⃣  Save contacts 💾\n");
-       printf("7️⃣  Exit 🚪\n");
+        printf("\nAddress Book Menu\n");
+        printf("1  Create contact\n");
+        printf("2  Search contact\n");
+        printf("3  Edit contact\n");
+        printf("4  Delete contact\n");
+        printf("5  List all contacts\n");
+        printf("6  Save contacts\n");
+        printf("7  Exit\n");
 
-       printf("\n👉 Enter your choice: ");
-       choice = 0;
-       scanf("%d", &choice);
-       getchar();
+        printf("\nEnter your choice: ");
+
+        if (scanf("%d", &choice) != 1) {
+            while (getchar() != '\n');  
+            printf("Invalid input. Please enter a number.\n");
+            continue;
+        }
+        getchar();
+
         switch (choice) {
             case 1:
                 createContact(&addressBook);
                 break;
+
             case 2:
                 searchContact(&addressBook);
                 break;
+
             case 3:
                 editContact(&addressBook);
                 break;
+
             case 4:
                 deleteContact(&addressBook);
                 break;
-            case 5:          
+
+            case 5:
                 listContacts(&addressBook);
                 break;
-            case 6:
-                printf("Saving and Exiting...\n");
-                saveContactsToFile(&addressBook);
+
+            case 6: {
+                int rc = saveContactsToFile(&addressBook);
+                if (rc == 0)
+                    printf("Contacts saved successfully.\n");
+                else
+                    printf("Failed to save contacts (error %d).\n", rc);
                 break;
+            }
+
             case 7:
                 saveAndExit(&addressBook);
                 break;
+
             default:
                 printf("Invalid choice. Please try again.\n");
         }
+
     } while (choice != 7);
-    
-       return 0;
+
+    return 0;
 }
